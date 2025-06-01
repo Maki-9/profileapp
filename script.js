@@ -1,14 +1,28 @@
-const themeToggle = document.getElementById('theme-toggle');
-const body = document.body;
+const tg = window.Telegram.WebApp;
+tg.ready();
 
-themeToggle.addEventListener('click', () => {
-  if (body.classList.contains('light-theme')) {
-    body.classList.remove('light-theme');
-    body.classList.add('dark-theme');
-    themeToggle.textContent = '🌙';
-  } else {
-    body.classList.remove('dark-theme');
-    body.classList.add('light-theme');
-    themeToggle.textContent = '☀️';
-  }
-});
+const user = tg.initDataUnsafe.user;
+
+document.getElementById("user-name").innerText = user.first_name;
+document.getElementById("user-tag").innerText = '@' + user.username;
+if (user.photo_url) {
+  document.getElementById("user-avatar").src = user.photo_url;
+}
+
+// fetch баланс и подарки
+fetch(`https://ваш-сервер.ru/api/user/${user.id}`)
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("user-balance").innerText = `${data.balance} монет`;
+
+    const container = document.getElementById("user-gifts");
+    data.gifts.forEach(gift => {
+      const giftEl = document.createElement('div');
+      giftEl.className = 'p-2 bg-pink-100 rounded-xl text-center text-sm shadow';
+      giftEl.innerHTML = `
+        <img src="${gift.icon}" class="w-10 h-10 mx-auto mb-1" />
+        ${gift.name}
+      `;
+      container.appendChild(giftEl);
+    });
+  });
