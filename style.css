@@ -1,0 +1,27 @@
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: white;
+  transition: background-color 0.3s ease;
+  position: relative;
+  font-family: system-ui, sans-serif;
+}
+
+body.dark-theme {
+  background-color: #242424;
+  color: white;
+}
+
+#theme-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+body.dark-theme #theme-toggle {
+  color: #f5f3ce;
+}
