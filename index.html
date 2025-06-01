@@ -1,21 +1,65 @@
-<div class="p-4 max-w-sm mx-auto bg-white rounded-2xl shadow-md space-y-4">
-  <div class="flex items-center space-x-4">
-    <img id="user-avatar" src="" alt="Avatar" class="w-16 h-16 rounded-full shadow">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Профиль</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+  <div class="p-4 max-w-sm w-full bg-white rounded-2xl shadow-md space-y-4">
+    <div class="flex items-center space-x-4">
+      <img id="user-avatar" src="" alt="Avatar" class="w-16 h-16 rounded-full shadow">
+      <div>
+        <h1 id="user-name" class="text-xl font-bold">Имя пользователя</h1>
+        <p id="user-tag" class="text-gray-500 text-sm">@username</p>
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center bg-gray-100 rounded-xl p-3">
+      <div class="text-gray-700 text-sm">💰 Баланс:</div>
+      <div id="user-balance" class="font-bold text-lg">0 монет</div>
+    </div>
+
     <div>
-      <h1 id="user-name" class="text-xl font-bold">Имя пользователя</h1>
-      <p id="user-tag" class="text-gray-500 text-sm">@username</p>
+      <h2 class="font-semibold text-md mb-2">🎁 Подарки</h2>
+      <div id="user-gifts" class="flex gap-2 overflow-x-auto">
+        <!-- Сюда вставляются карточки подарков -->
+      </div>
     </div>
   </div>
 
-  <div class="flex justify-between items-center bg-gray-100 rounded-xl p-3">
-    <div class="text-gray-700 text-sm">💰 Баланс:</div>
-    <div id="user-balance" class="font-bold text-lg">0 монет</div>
-  </div>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
 
-  <div>
-    <h2 class="font-semibold text-md mb-2">🎁 Подарки</h2>
-    <div id="user-gifts" class="flex gap-2 overflow-x-auto">
-      <!-- Сюда вставляются карточки подарков -->
-    </div>
-  </div>
-</div>
+    const user = tg.initDataUnsafe.user;
+
+    document.getElementById("user-name").innerText = user.first_name;
+    document.getElementById("user-tag").innerText = '@' + user.username;
+    if (user.photo_url) {
+      document.getElementById("user-avatar").src = user.photo_url;
+    } else {
+      document.getElementById("user-avatar").src = "https://via.placeholder.com/64";
+    }
+
+    fetch(`https://ваш-сервер/api/user/${user.id}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("user-balance").innerText = `${data.balance} монет`;
+
+        const container = document.getElementById("user-gifts");
+        data.gifts.forEach(gift => {
+          const giftEl = document.createElement('div');
+          giftEl.className = 'p-2 bg-pink-100 rounded-xl text-center text-sm shadow w-20';
+          giftEl.innerHTML = `
+            <img src="${gift.icon}" class="w-10 h-10 mx-auto mb-1" />
+            ${gift.name}
+          `;
+          container.appendChild(giftEl);
+        });
+      });
+  </script>
+</body>
+</html>
